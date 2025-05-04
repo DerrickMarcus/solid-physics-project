@@ -39,8 +39,8 @@ N = 5  # 截断G的个数（-5到5共11个）
 G_array = np.array([n * 2 * np.pi / a for n in range(-N, N + 1)])
 
 N_k = 200
-Delta_k = (2 * np.pi / a) / 10
-k_center = np.pi / a
+Delta_k = (2 * np.pi / a) / 1
+k_center = 0
 k_array = np.linspace(k_center - Delta_k, k_center + Delta_k, N_k)
 E_bands = np.zeros((2 * N + 1, N_k))
 
@@ -57,43 +57,70 @@ for idx, k in enumerate(k_array):
     E_bands[:, idx] = np.sort(eigs)
 
 # 将能量移动到原点
-# E_bands -= 3.18e-20
+E_bands -= 3.18e-20
 
 # 近自由电子近似
 G_0 = 2 * np.pi / a
 V_G0 = v_fourier(G_0)
 E_free = hbar**2 * k_array**2 / (2 * m_0)
-E_avg = hbar**2 * (k_array**2 + (k_array - G_0) ** 2) / (4 * m_0)
-Delta_E = hbar**2 * (k_array**2 - (k_array - G_0) ** 2) / (4 * m_0)
-E_m = E_avg - np.sqrt(Delta_E**2 + V_G0**2)
-E_p = E_avg + np.sqrt(Delta_E**2 + V_G0**2)
+
+E_avg_1 = hbar**2 * (k_array**2 + (k_array - G_0) ** 2) / (4 * m_0)
+Delta_E_1 = hbar**2 * (k_array**2 - (k_array - G_0) ** 2) / (4 * m_0)
+E_m_1 = E_avg_1 - np.sqrt(Delta_E_1**2 + V_G0**2)
+E_p_1 = E_avg_1 + np.sqrt(Delta_E_1**2 + V_G0**2)
+
+E_avg_2 = hbar**2 * (k_array**2 + (k_array + G_0) ** 2) / (4 * m_0)
+Delta_E_2 = hbar**2 * (k_array**2 - (k_array + G_0) ** 2) / (4 * m_0)
+E_m_2 = E_avg_2 - np.sqrt(Delta_E_2**2 + V_G0**2)
+E_p_2 = E_avg_2 + np.sqrt(Delta_E_2**2 + V_G0**2)
 
 # 画出前两个能带
-plt.figure(figsize=(8, 6))
+plt.figure(figsize=(15, 5))
 
 plt.plot(
-    k_array[0 : N_k // 2 - 1] * a / np.pi,
-    E_bands[0, 0 : N_k // 2 - 1] / e_0,
+    k_array[N_k // 4 : 3 * N_k // 4] * a / np.pi,
+    E_bands[0, N_k // 4 : 3 * N_k // 4] / e_0,
     label="Band 1 (特征根法)",
 )
 plt.plot(
-    k_array[N_k // 2 :] * a / np.pi,
-    E_bands[1, N_k // 2 :] / e_0,
+    k_array[0 : N_k // 4] * a / np.pi,
+    E_bands[1, 0 : N_k // 4] / e_0,
     label="Band 2 (特征根法)",
+)
+plt.plot(
+    k_array[3 * N_k // 4 :] * a / np.pi,
+    E_bands[1, 3 * N_k // 4 :] / e_0,
+    label="_nolegend_",
+    color="C1",
 )
 plt.plot(k_array * a / np.pi, E_free / e_0, "--", label="自由电子")
 plt.plot(
-    k_array[0 : N_k // 2 - 1] * a / np.pi,
-    E_m[0 : N_k // 2 - 1] / e_0,
+    k_array[N_k // 4 : N_k // 2] * a / np.pi,
+    E_m_1[N_k // 4 : N_k // 2] / e_0,
     ":",
     label="Band 1 (近自由电子近似)",
 )
 plt.plot(
-    k_array[N_k // 2 :] * a / np.pi,
-    E_p[N_k // 2 :] / e_0,
+    k_array[N_k // 2 : 3 * N_k // 4] * a / np.pi,
+    E_m_2[N_k // 2 : 3 * N_k // 4] / e_0,
+    ":",
+    label="_nolegend_",
+    color="C3",
+)
+plt.plot(
+    k_array[3 * N_k // 4 :] * a / np.pi,
+    E_p_1[3 * N_k // 4 :] / e_0,
     ":",
     label="Band 2 (近自由电子近似)",
 )
+plt.plot(
+    k_array[0 : N_k // 4] * a / np.pi,
+    E_p_2[0 : N_k // 4] / e_0,
+    ":",
+    label="_nolegend_",
+    color="C4",
+)
+
 
 plt.xlabel(r"k ($\frac{\pi}{a}$)")
 plt.ylabel("E (eV)")
@@ -101,7 +128,7 @@ plt.title("布里渊区边界能带曲线对比")
 plt.grid(True)
 plt.legend()
 plt.tight_layout()
-plt.savefig(
-    "./assets/solid_physics_project_near_free.png", dpi=300, bbox_inches="tight"
-)
+# plt.savefig(
+#     "./assets/solid_physics_project_near_free1.png", dpi=300, bbox_inches="tight"
+# )
 plt.show()

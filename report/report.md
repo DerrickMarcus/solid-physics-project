@@ -1,4 +1,4 @@
-# 固体物理大作业
+# 固体物理大作业 实验报告
 
 > 姓名：陈彦旭
 >
@@ -138,8 +138,33 @@ $$
 
 
 
-在第一布里渊区和第二布里渊区边界附近， $\Delta k=\pm\dfrac{1}{10}\dfrac{2\pi}{a}$ 范围内，绘制**扩展布里渊区图景**下的前两个能带曲线，将特征根法、近自由电子近似与自由电子的情况进行对比：
+运行文件 `src/plot_near_free.py` ，在第一布里渊区和第二布里渊区边界附近， $\Delta k=\pm\dfrac{1}{10}\dfrac{2\pi}{a}$ 范围内，绘制**扩展布里渊区图景**下的前两个能带曲线，将特征根法、近自由电子近似与自由电子的情况进行对比：
 
 ![solid_physics_project_near_free1](https://cdn.jsdelivr.net/gh/DerrickMarcus/picgo_image/images/solid_physics_project_near_free1.png)
 
-可见，在近似自由电子近似下，两条能带曲线以自由电子在布里渊区边界处的能量值 $E^0$ 为中心，形成能级劈裂，且偏离值相同。但是在特征根求解下，两条能态曲线虽然也形成能级劈裂，但是中心值不再自由电子能量处，而是能量均高于自由电子能量。
+可见，在近似自由电子近似下，两条能带曲线以自由电子在布里渊区边界处的能量值 $E^0$ 为中心，形成能级劈裂，且偏离值相同，并且在边界之外附近区域，能量与自由电子的能量较为接近，差值较小，符合将周期性势场作为微扰的假设。
+
+但是在特征根求解下，两条能态曲线虽然也形成能级劈裂，但是中心值不再自由电子能量处，而是能量均高于自由电子能量。
+
+运行文件 `src/plot_near_free.py` 可以画出第一布里渊区和第二布里渊区内部的能带曲线：
+
+![solid_physics_project_near_free11](https://cdn.jsdelivr.net/gh/DerrickMarcus/picgo_image/images/solid_physics_project_near_free11.png)
+
+仍然可以发现，近自由电子近似下，能带曲线在大部分地方都与自由电子能量几乎重合，仅在布里渊区边界附近有能级分裂，有能隙。
+
+而特征根求解的能带曲线，与自由电子差值较大，且能量显著高于自由电子，最低能量也不为0，代码运行结果显示最低能量（波矢为0处）约为 $3.027\times10^{-20}\text{J}=0.189\text{eV}$ ，低于该处的势能值。原因可能是，构造哈密顿量矩阵时，我们把势能的所有傅里叶分量都加到了矩阵里，包括直流分量（周期性势场的平均值）：
+$$
+v(g)=\frac{1}{a}\int_0^a V(x) \mathrm{d}x=\frac{1}{a} \int_{-a/4}^{a/4} V_0 \cos \frac{2\pi x}{a}\mathrm{d}dx =\frac{V_0}{\pi}\approx3.18\times10^{-20}\text{J}\approx0.199\text{eV}.
+$$
+
+对应矩阵的对角项，相当于给所有能量都加上了这个值，因此对角化之后的所有本征值都会整体抬高。与我们观察到的最低能带带底的 $0.189\text{eV}$ 十分接近。
+
+而我们所使用的近自由电子近似中，通常忽略了 $g=0$ 的对角项，只保留了在布里渊区边界耦合的那两个傅里叶分量 $v(\pm G_0)$ ，得到的能带几乎就等于自由电子的抛物线形状，只有在边界处分裂，而不会整体上移。
+
+为了验证，我们在 `src/plot_near_py` 文件中，将特征根求解得到的能带，整体减去 $0.199\text{eV}$ ，也即 `E_bands -= 3.18e-20` 然后再次绘制，得到下图：
+
+![solid_physics_project_near_free2](https://cdn.jsdelivr.net/gh/DerrickMarcus/picgo_image/images/solid_physics_project_near_free2.png)
+
+![solid_physics_project_near_free222](https://cdn.jsdelivr.net/gh/DerrickMarcus/picgo_image/images/solid_physics_project_near_free222.png)
+
+此时可以发现，减去直流分量后，特征根与自由电子近似得到的能带曲线十分接近，几乎重合，由此验证了我们的结论，也说明这两种方法都是可以有效且精准计算能带的方法，“殊途同归”。
