@@ -94,14 +94,14 @@ Band 3 to Band 4 gap: 0.1061 eV
 $$
 \begin{vmatrix}
 E_k^0-E & V_n^* \\
-V_n & E_{k'}^*-E
+V_n & E_{k'}^0-E
 \end{vmatrix}=0
 $$
 得到两个能量本征值为：
 $$
 E_{\pm}=\frac{E_k^0+E_{k'}^0}{2}\pm\sqrt{\left(\frac{E_k^0-E_{k'}^0}{2}\right)^2+|V_n|^2}
 $$
-在布里渊区边界处，有 $k=+\dfrac{\pi}{a},k'=-\dfrac{\pi}{a},\;E_k^0=E_{k'}^0=E^0$ 得到：
+在布里渊区边界处，有 $k=+\dfrac{\pi}{a},k'=-\dfrac{\pi}{a},\;E_k^0=E_{k'}^0=E^0$ ，得到：
 $$
 E_{\pm} =
 \begin{cases}
@@ -138,17 +138,17 @@ $$
 
 
 
-运行文件 `src/plot_near_free.py` ，在第一布里渊区和第二布里渊区边界附近， $\Delta k=\pm\dfrac{1}{10}\dfrac{2\pi}{a}$ 范围内，绘制**扩展布里渊区图景**下的前两个能带曲线，将特征根法、近自由电子近似与自由电子的情况进行对比：
+运行文件 `src/plot_near_free.py` ，设置中心点在第一布里渊区和第二布里渊区边界， $\Delta k=\pm\dfrac{1}{10}\dfrac{2\pi}{a}$ 范围内，绘制**扩展布里渊区图景**下的前两个能带曲线，将特征根法、近自由电子近似与自由电子的情况进行对比：
 
-![solid_physics_project_near_free1](https://cdn.jsdelivr.net/gh/DerrickMarcus/picgo_image/images/solid_physics_project_near_free1.png)
+![solid_physics_project_near_free_2505051126](https://cdn.jsdelivr.net/gh/DerrickMarcus/picgo-image/images/solid_physics_project_near_free_2505051126.png)
 
 可见，在近似自由电子近似下，两条能带曲线以自由电子在布里渊区边界处的能量值 $E^0$ 为中心，形成能级劈裂，且偏离值相同，并且在边界之外附近区域，能量与自由电子的能量较为接近，差值较小，符合将周期性势场作为微扰的假设。
 
 但是在特征根求解下，两条能态曲线虽然也形成能级劈裂，但是中心值不再自由电子能量处，而是能量均高于自由电子能量。
 
-运行文件 `src/plot_near_free.py` 可以画出第一布里渊区和第二布里渊区内部的能带曲线：
+运行文件 `src/plot_near_free1.py` 设置中心点为原点，可以画出第一布里渊区和第二布里渊区内部的能带曲线：
 
-![solid_physics_project_near_free11](https://cdn.jsdelivr.net/gh/DerrickMarcus/picgo_image/images/solid_physics_project_near_free11.png)
+![solid_physics_project_near_free1_2505051120](https://cdn.jsdelivr.net/gh/DerrickMarcus/picgo-image/images/solid_physics_project_near_free1_2505051120.png)
 
 仍然可以发现，近自由电子近似下，能带曲线在大部分地方都与自由电子能量几乎重合，仅在布里渊区边界附近有能级分裂，有能隙。
 
@@ -163,8 +163,14 @@ $$
 
 为了验证，我们在 `src/plot_near_py` 文件中，将特征根求解得到的能带，整体减去 $0.199\text{eV}$ ，也即 `E_bands -= 3.18e-20` 然后再次绘制，得到下图：
 
-![solid_physics_project_near_free2](https://cdn.jsdelivr.net/gh/DerrickMarcus/picgo_image/images/solid_physics_project_near_free2.png)
+![solid_physics_project_near_free_fix_2505051126](https://cdn.jsdelivr.net/gh/DerrickMarcus/picgo-image/images/solid_physics_project_near_free_fix_2505051126.png)
 
-![solid_physics_project_near_free222](https://cdn.jsdelivr.net/gh/DerrickMarcus/picgo_image/images/solid_physics_project_near_free222.png)
+![solid_physics_project_near_free1_fix_2505051120](https://cdn.jsdelivr.net/gh/DerrickMarcus/picgo-image/images/solid_physics_project_near_free1_fix_2505051120.png)
 
 此时可以发现，减去直流分量后，特征根与自由电子近似得到的能带曲线十分接近，几乎重合，由此验证了我们的结论，也说明这两种方法都是可以有效且精准计算能带的方法，“殊途同归”。
+
+
+
+## 实验感想
+
+本次大作业不仅增进了我对课堂所讲“近自由电子近似”方法的理解和运用，也学习到了另外一种方法——特征根求解发，它是更贴近于量子力学中表象变换概念的方法，再动量空间中用自由电子平面波展开，然后求解本征方程，虽然对矩阵做了截断，但是结果已经足够精确。对于这两种方法直接得到结果，看似有差异，但实际上在考虑直流分量的修正的情况下，两种结果较为接近。

@@ -34,17 +34,19 @@ def v_fourier(g, epsabs=1e-12, epsrel=1e-12):
     return result
 
 
+"""先画右边部分"""
+
 # 动量基底
 N = 5  # 截断G的个数（-5到5共11个）
 G_array = np.array([n * 2 * np.pi / a for n in range(-N, N + 1)])
 
 N_k = 200
-Delta_k = (2 * np.pi / a) / 1
-k_center = 0
-k_array = np.linspace(k_center - Delta_k, k_center + Delta_k, N_k)
+Delta_k = (2 * np.pi / a) / 2
+k_center = np.pi / a
+k_arr1 = np.linspace(k_center - Delta_k, k_center + Delta_k, N_k)
 E_bands = np.zeros((2 * N + 1, N_k))
 
-for idx, k in enumerate(k_array):
+for idx, k in enumerate(k_arr1):
     # 构造哈密顿量
     H = np.zeros((2 * N + 1, 2 * N + 1), dtype=complex)
     for i, G_1 in enumerate(G_array):
@@ -58,19 +60,50 @@ for idx, k in enumerate(k_array):
 
 # 将能量移动到原点
 E_bands -= 3.18e-20
+E_eig1_1 = E_bands[0, :]
+E_eig2_1 = E_bands[1, :]
 
 # 近自由电子近似
 G_0 = 2 * np.pi / a
 V_G0 = v_fourier(G_0)
-E_free = hbar**2 * k_array**2 / (2 * m_0)
+E_free_1 = hbar**2 * k_arr1**2 / (2 * m_0)
 
-E_avg_1 = hbar**2 * (k_array**2 + (k_array - G_0) ** 2) / (4 * m_0)
-Delta_E_1 = hbar**2 * (k_array**2 - (k_array - G_0) ** 2) / (4 * m_0)
+E_avg_1 = hbar**2 * (k_arr1**2 + (k_arr1 - G_0) ** 2) / (4 * m_0)
+Delta_E_1 = hbar**2 * (k_arr1**2 - (k_arr1 - G_0) ** 2) / (4 * m_0)
 E_m_1 = E_avg_1 - np.sqrt(Delta_E_1**2 + V_G0**2)
 E_p_1 = E_avg_1 + np.sqrt(Delta_E_1**2 + V_G0**2)
 
-E_avg_2 = hbar**2 * (k_array**2 + (k_array + G_0) ** 2) / (4 * m_0)
-Delta_E_2 = hbar**2 * (k_array**2 - (k_array + G_0) ** 2) / (4 * m_0)
+
+"""再画左边部分"""
+
+k_center = -np.pi / a
+k_arr2 = np.linspace(k_center - Delta_k, k_center + Delta_k, N_k)
+E_bands = np.zeros((2 * N + 1, N_k))
+
+for idx, k in enumerate(k_arr2):
+    # 构造哈密顿量
+    H = np.zeros((2 * N + 1, 2 * N + 1), dtype=complex)
+    for i, G_1 in enumerate(G_array):
+        for j, G_2 in enumerate(G_array):
+            if i == j:
+                H[i, j] = hbar**2 / (2 * m_0) * (k + G_1) ** 2
+            H[i, j] += v_fourier(G_1 - G_2)
+    eigs = np.linalg.eigh(H)[0]
+    eigs = np.asarray(eigs, dtype=float)
+    E_bands[:, idx] = np.sort(eigs)
+
+# 将能量移动到原点
+E_bands -= 3.18e-20
+E_eig1_2 = E_bands[0, :]
+E_eig2_2 = E_bands[1, :]
+
+# 近自由电子近似
+G_0 = 2 * np.pi / a
+V_G0 = v_fourier(G_0)
+E_free_2 = hbar**2 * k_arr2**2 / (2 * m_0)
+
+E_avg_2 = hbar**2 * (k_arr2**2 + (k_arr2 + G_0) ** 2) / (4 * m_0)
+Delta_E_2 = hbar**2 * (k_arr2**2 - (k_arr2 + G_0) ** 2) / (4 * m_0)
 E_m_2 = E_avg_2 - np.sqrt(Delta_E_2**2 + V_G0**2)
 E_p_2 = E_avg_2 + np.sqrt(Delta_E_2**2 + V_G0**2)
 
@@ -78,49 +111,57 @@ E_p_2 = E_avg_2 + np.sqrt(Delta_E_2**2 + V_G0**2)
 plt.figure(figsize=(15, 5))
 
 plt.plot(
-    k_array[N_k // 4 : 3 * N_k // 4] * a / np.pi,
-    E_bands[0, N_k // 4 : 3 * N_k // 4] / e_0,
+    k_arr1[0 : N_k // 2] * a / np.pi,
+    E_eig1_1[0 : N_k // 2] / e_0,
     label="Band 1 (特征根法)",
 )
 plt.plot(
-    k_array[0 : N_k // 4] * a / np.pi,
-    E_bands[1, 0 : N_k // 4] / e_0,
+    k_arr2[N_k // 2 :] * a / np.pi,
+    E_eig1_2[N_k // 2 :] / e_0,
+    label="_nolegend_",
+    color="C0",
+)
+plt.plot(
+    k_arr1[N_k // 2 :] * a / np.pi,
+    E_eig2_1[N_k // 2 :] / e_0,
     label="Band 2 (特征根法)",
 )
 plt.plot(
-    k_array[3 * N_k // 4 :] * a / np.pi,
-    E_bands[1, 3 * N_k // 4 :] / e_0,
+    k_arr2[0 : N_k // 2] * a / np.pi,
+    E_eig2_2[0 : N_k // 2] / e_0,
     label="_nolegend_",
     color="C1",
 )
-plt.plot(k_array * a / np.pi, E_free / e_0, "--", label="自由电子")
+
+plt.plot(k_arr1 * a / np.pi, E_free_1 / e_0, "--", label="自由电子")
+plt.plot(k_arr2 * a / np.pi, E_free_2 / e_0, "--", label="_nolegend_", color="C2")
+
 plt.plot(
-    k_array[N_k // 4 : N_k // 2] * a / np.pi,
-    E_m_1[N_k // 4 : N_k // 2] / e_0,
+    k_arr1[0 : N_k // 2] * a / np.pi,
+    E_m_1[0 : N_k // 2] / e_0,
     ":",
     label="Band 1 (近自由电子近似)",
 )
 plt.plot(
-    k_array[N_k // 2 : 3 * N_k // 4] * a / np.pi,
-    E_m_2[N_k // 2 : 3 * N_k // 4] / e_0,
+    k_arr2[N_k // 2 :] * a / np.pi,
+    E_m_2[N_k // 2 :] / e_0,
     ":",
     label="_nolegend_",
     color="C3",
 )
 plt.plot(
-    k_array[3 * N_k // 4 :] * a / np.pi,
-    E_p_1[3 * N_k // 4 :] / e_0,
+    k_arr1[N_k // 2 :] * a / np.pi,
+    E_p_1[N_k // 2 :] / e_0,
     ":",
     label="Band 2 (近自由电子近似)",
 )
 plt.plot(
-    k_array[0 : N_k // 4] * a / np.pi,
-    E_p_2[0 : N_k // 4] / e_0,
+    k_arr2[0 : N_k // 2] * a / np.pi,
+    E_p_2[0 : N_k // 2] / e_0,
     ":",
     label="_nolegend_",
     color="C4",
 )
-
 
 plt.xlabel(r"k ($\frac{\pi}{a}$)")
 plt.ylabel("E (eV)")

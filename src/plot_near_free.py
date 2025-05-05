@@ -72,8 +72,8 @@ E_p = E_avg + np.sqrt(Delta_E**2 + V_G0**2)
 plt.figure(figsize=(8, 6))
 
 plt.plot(
-    k_array[0 : N_k // 2 - 1] * a / np.pi,
-    E_bands[0, 0 : N_k // 2 - 1] / e_0,
+    k_array[0 : N_k // 2] * a / np.pi,
+    E_bands[0, 0 : N_k // 2] / e_0,
     label="Band 1 (特征根法)",
 )
 plt.plot(
@@ -83,8 +83,8 @@ plt.plot(
 )
 plt.plot(k_array * a / np.pi, E_free / e_0, "--", label="自由电子")
 plt.plot(
-    k_array[0 : N_k // 2 - 1] * a / np.pi,
-    E_m[0 : N_k // 2 - 1] / e_0,
+    k_array[0 : N_k // 2] * a / np.pi,
+    E_m[0 : N_k // 2] / e_0,
     ":",
     label="Band 1 (近自由电子近似)",
 )
@@ -101,7 +101,7 @@ plt.title("布里渊区边界能带曲线对比")
 plt.grid(True)
 plt.legend()
 plt.tight_layout()
-plt.savefig(
-    "./assets/solid_physics_project_near_free.png", dpi=300, bbox_inches="tight"
-)
+# plt.savefig(
+#     "./assets/solid_physics_project_near_free.png", dpi=300, bbox_inches="tight"
+# )
 plt.show()
