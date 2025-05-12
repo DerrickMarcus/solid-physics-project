@@ -161,7 +161,7 @@ $$
 
 而我们所使用的近自由电子近似中，通常忽略了 $g=0$ 的对角项，只保留了在布里渊区边界耦合的那两个傅里叶分量 $v(\pm G_0)$ ，得到的能带几乎就等于自由电子的抛物线形状，只有在边界处分裂，而不会整体上移。
 
-为了验证，我们在 `src/plot_near_py` 文件中，将特征根求解得到的能带，整体减去 $0.199\text{eV}$ ，也即 `E_bands -= 3.18e-20` 然后再次绘制，得到下图：
+为了验证，我们在 `src/plot_near.py` 文件中，将特征根求解得到的能带，整体减去 $0.199\text{eV}$ ，也即 `E_bands -= 3.18e-20` 然后再次绘制，得到下图：
 
 ![solid_physics_project_near_free_fix_2505051126](https://cdn.jsdelivr.net/gh/DerrickMarcus/picgo-image/images/solid_physics_project_near_free_fix_2505051126.png)
 
